@@ -14,7 +14,14 @@
 
   var UNITY_CONFIG = {
     buildDir: 'game/Build',   // Unity Build 文件夹在本站的位置
-    buildName: 'PAGE' // TODO: 改成你的 xxx.loader.js 的前缀 xxx
+    buildName: 'PAGE', // TODO: 改成你的 xxx.loader.js 的前缀 xxx
+    // data 大文件的独立地址（可选项）。
+    // 场景：部署到 GitHub Pages 时，>100MB 的 .data.unityweb 无法随仓库分发
+    // （GitHub Pages 不支持 Git LFS，只会返回指针文本），需把该文件上传到
+    // GitHub Releases 或其他对象存储，然后把完整下载地址填在这里，例如：
+    // dataUrlOverride: 'https://github.com/seasea0403/FireworkPage/releases/download/v1.0/PAGE.data.unityweb'
+    // 留空（''）则使用本站 game/Build 下的本地文件（本地预览就是这种情况）。
+    dataUrlOverride: 'https://github.com/seasea0403/FireworkPage/releases/download/v1.0/PAGE.data.gz'
   };
 
   var unityInstance = null;
@@ -81,7 +88,9 @@
       if (progress) progress.classList.add('show');
 
       Promise.all([
-        detectExt(base + '.data'),
+        UNITY_CONFIG.dataUrlOverride
+          ? Promise.resolve(UNITY_CONFIG.dataUrlOverride) // data 走外部地址（如 Releases）
+          : detectExt(base + '.data'),
         detectExt(base + '.framework.js'),
         detectExt(base + '.wasm')
       ]).then(function (urls) {
