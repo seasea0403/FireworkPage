@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>天工录之岁岁烟火铺 — 官网首页</title>
+  <meta name="description" content="相约上栗，造一场非遗烟花梦！《天工录之岁岁烟火铺》官方网站。">
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+
+  <!-- 全屏循环烟花背景视频（替换 assets/video/bg-fireworks.mp4 即可生效） -->
+  <div class="bg-video-wrap">
+    <video class="bg-video" autoplay muted loop playsinline>
+      <source src="assets/video/bg-fireworks.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="bg-mask"></div>
+
+  <!-- 统一顶部导航（四栏，全站通用） -->
+  <nav class="site-nav">
+    <a class="nav-logo" href="index.html">
+      <img src="assets/img/logo/game-logo.png" alt="天工录之岁岁烟火铺 LOGO">
+      <span>天工录之岁岁烟火铺</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">官网首页</a></li>
+      <li><a href="story.html">故事背景</a></li>
+      <li><a href="culture.html">上栗烟花</a></li>
+      <li><a href="about.html">关于我们</a></li>
+    </ul>
+  </nav>
+
+  <div class="page">
+
+    <!-- ========== 顶部视觉区 ========== -->
+    <header class="hero">
+      <div class="hero-art">
+        <img src="assets/img/hero/hero-main.png" alt="古风 NPC 群像与烟花夜空主视觉">
+      </div>
+      <div class="hero-inner container">
+        <img class="hero-logo" src="assets/img/logo/game-logo.png" alt="天工录之岁岁烟火铺">
+        <p class="hero-slogan">文化传承，一起来花炮之乡上栗，开家烟火铺吧！</p>
+        <p class="hero-tagline">相约上栗，造一场非遗烟花梦！</p>
+        <a class="btn" href="#game">进入官网</a>
+        <!-- 全网预约人数（占位数据：接真实接口时修改 data-count 即可） -->
+        <div class="hero-reserve">
+          <div class="stat-num" data-count="1280000">0</div>
+          <div class="stat-label">全网预约人数</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ========== 游戏动画入口 ========== -->
+    <section class="section">
+      <div class="container">
+        <h2 class="section-title">开局动画</h2>
+        <p class="section-subtitle">点击观看游戏开局动画</p>
+        <div class="opening-video">
+          <video playsinline preload="none" poster="assets/img/cover/opening-cover.svg">
+            <source src="assets/video/opening.mp4" type="video/mp4">
+          </video>
+          <div class="video-cover">
+            <img class="cover-img" src="assets/img/cover/opening-cover.svg" alt="开局动画封面">
+            <button class="video-play-btn" aria-label="播放开局动画">▶</button>
+          </div>
+        </div>
+        <p class="video-tip"></p>
+      </div>
+    </section>
+
+    <!-- ========== 游戏窗口板块（仿 B 站播放页布局） ========== -->
+    <section class="section" id="game">
+      <div class="container">
+        <h2 class="section-title">烟火铺开张</h2>
+        <p class="section-subtitle">游戏实录 · NPC 图鉴 · 烟花图鉴</p>
+
+        <div class="game-layout">
+          <!-- 左侧：Unity WebGL 主游戏画面窗口 -->
+          <div class="game-window">
+            <canvas id="unity-canvas"></canvas>
+            <!-- 游戏未接入时的占位封面（接入 Build 后自动隐藏） -->
+            <div class="game-cover">
+              <img src="assets/img/cover/game-cover.svg" alt="游戏画面占位">
+              <div class="game-cover-title">游戏即将上线</div>
+              <div class="game-cover-sub">Unity WebGL 构建放入 game/ 目录后，此处自动加载游戏</div>
+            </div>
+            <!-- Unity 加载进度条 -->
+            <div class="unity-progress">
+              <div class="unity-progress-bar"><div class="unity-progress-fill"></div></div>
+              <div class="unity-progress-text">游戏加载中…</div>
+            </div>
+            <!-- 全屏按钮：默认隐藏，hover 窗口显示 -->
+            <button class="game-fullscreen-btn">⛶ 全屏</button>
+          </div>
+
+          <!-- 右侧：双轮播模块 -->
+          <aside class="side-carousels">
+            <div>
+              <h3>NPC 形象</h3>
+              <div class="carousel carousel-portrait" data-autoplay="3500">
+                <div class="carousel-track">
+                  <div class="carousel-slide"><img src="assets/img/npc/npc-1.png" alt="NPC 形象 1"><div class="carousel-caption">NPC 形象 · 壹</div></div>
+                  <div class="carousel-slide"><img src="assets/img/npc/npc-2.png" alt="NPC 形象 2"><div class="carousel-caption">NPC 形象 · 贰</div></div>
+                  <div class="carousel-slide"><img src="assets/img/npc/npc-3.png" alt="NPC 形象 3"><div class="carousel-caption">NPC 形象 · 叁</div></div>
+                  <div class="carousel-slide"><img src="assets/img/npc/npc-4.png" alt="NPC 形象 4"><div class="carousel-caption">NPC 形象 · 肆</div></div>
+                  <div class="carousel-slide"><img src="assets/img/npc/npc-5.png" alt="NPC 形象 5"><div class="carousel-caption">NPC 形象 · 伍</div></div>
+                  <div class="carousel-slide"><img src="assets/img/npc/npc-6.png" alt="NPC 形象 6"><div class="carousel-caption">NPC 形象 · 陆</div></div>
+                  <div class="carousel-slide"><img src="assets/img/npc/npc-7.png" alt="NPC 形象 7"><div class="carousel-caption">NPC 形象 · 柒</div></div>
+                  <div class="carousel-slide"><img src="assets/img/npc/npc-8.png" alt="NPC 形象 8"><div class="carousel-caption">NPC 形象 · 捌</div></div>
+                  <div class="carousel-slide"><img src="assets/img/npc/npc-9.png" alt="NPC 形象 9"><div class="carousel-caption">NPC 形象 · 玖</div></div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <h3>烟花图鉴</h3>
+              <div class="carousel carousel-square" data-autoplay="4000">
+                <div class="carousel-track">
+                  <div class="carousel-slide"><img src="assets/img/fireworks/fw-1.jpg" alt="烟花图鉴 1"><div class="carousel-caption">图鉴 · 金菊怒放</div></div>
+                  <div class="carousel-slide"><img src="assets/img/fireworks/fw-2.jpg" alt="烟花图鉴 2"><div class="carousel-caption">图鉴 · 红英落雪</div></div>
+                  <div class="carousel-slide"><img src="assets/img/fireworks/fw-3.jpg" alt="烟花图鉴 3"><div class="carousel-caption">图鉴 · 紫电青霜</div></div>
+                  <div class="carousel-slide"><img src="assets/img/fireworks/fw-4.jpg" alt="烟花图鉴 4"><div class="carousel-caption">图鉴 · 岁岁平安</div></div>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+
+        <!-- 游玩数据栏（占位数据） -->
+        <div class="play-stats">
+          <div>
+            <div class="stat-num" data-count="8642">0</div>
+            <div class="stat-label">今日游玩人次</div>
+          </div>
+          <div>
+            <div class="stat-num" data-count="3568720">0</div>
+            <div class="stat-label">累计游玩人次</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <div class="container">
+        《天工录之岁岁烟火铺》官方网站 · 相约上栗，造一场非遗烟花梦
+      </div>
+    </footer>
+  </div>
+
+  <script src="js/common.js"></script>
+  <script src="js/unity-loader.js"></script>
+</body>
+</html>

@@ -1,0 +1,336 @@
+/* ============================================================
+   各页面专属板块样式
+   ============================================================ */
+
+/* ==================== 官网首页 index.html ==================== */
+
+/* ---------- 顶部视觉区 ---------- */
+.hero {
+  position: relative;
+  min-height: calc(100vh - var(--nav-h));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+}
+/* 主视觉插画作为区内背景层（NPC 群像 + 烟花夜空） */
+.hero-art {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+.hero-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.55;
+}
+.hero-inner { padding: 60px 0; }
+.hero-logo {
+  width: min(420px, 70vw);
+  margin: 0 auto 20px;
+  filter: drop-shadow(0 0 24px rgba(240, 199, 94, 0.45));
+}
+.hero-slogan {
+  font-size: clamp(1.1rem, 2.6vw, 1.6rem);
+  color: var(--paper);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+}
+.hero-tagline {
+  margin: 14px 0 30px;
+  font-family: "STKaiti", "KaiTi", serif;
+  font-size: clamp(1.4rem, 3.4vw, 2.2rem);
+  color: var(--gold);
+  letter-spacing: 0.2em;
+  text-shadow: 0 0 20px rgba(240, 199, 94, 0.4);
+}
+.hero-reserve { margin-top: 34px; }
+
+/* ---------- 游戏动画入口 ---------- */
+.opening-video {
+  position: relative;
+  max-width: 880px;
+  margin: 0 auto;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(240, 199, 94, 0.45);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+.opening-video video { width: 100%; display: block; aspect-ratio: 16 / 9; background: #000; }
+.video-cover {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(7, 10, 26, 0.25);
+}
+.video-cover img.cover-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+}
+.video-play-btn {
+  width: 84px; height: 84px;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  background: rgba(7, 10, 26, 0.65);
+  color: var(--gold);
+  font-size: 2rem;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+.video-cover:hover .video-play-btn {
+  transform: scale(1.1);
+  background: rgba(212, 80, 60, 0.75);
+  color: #fff;
+}
+.video-tip {
+  text-align: center;
+  color: var(--paper-dim);
+  font-size: 0.85rem;
+  margin-top: 12px;
+}
+
+/* ---------- 游戏窗口板块（仿 B 站播放页：左主窗口 + 右双轮播） ---------- */
+.game-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  align-items: stretch;
+}
+/* 左侧：Unity WebGL 游戏窗口 */
+.game-window {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(240, 199, 94, 0.45);
+  background: #000;
+  aspect-ratio: 16 / 9;
+  align-self: start;
+}
+#unity-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: #0d1330;
+}
+/* 游戏未接入时的占位封面 */
+.game-cover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: rgba(7, 10, 26, 0.55);
+}
+.game-cover img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  opacity: 0.7;
+}
+.game-cover-title {
+  font-family: "STKaiti", "KaiTi", serif;
+  font-size: 1.6rem;
+  color: var(--gold);
+}
+.game-cover-sub { color: var(--paper-dim); font-size: 0.9rem; }
+/* Unity 加载进度条 */
+.unity-progress {
+  position: absolute;
+  left: 50%; bottom: 46px;
+  transform: translateX(-50%);
+  width: 60%;
+  display: none;
+}
+.unity-progress.show { display: block; }
+.unity-progress-bar {
+  height: 10px;
+  border-radius: 999px;
+  border: 1px solid var(--gold);
+  overflow: hidden;
+  background: rgba(7, 10, 26, 0.7);
+}
+.unity-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--gold-dark), var(--gold));
+  transition: width 0.2s;
+}
+.unity-progress-text {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--paper-dim);
+  margin-top: 6px;
+}
+/* 全屏按钮：默认隐藏，鼠标靠近窗口才显示 */
+.game-fullscreen-btn {
+  position: absolute;
+  right: 14px; bottom: 12px;
+  padding: 8px 18px;
+  border: 1px solid var(--gold);
+  border-radius: 8px;
+  background: rgba(7, 10, 26, 0.7);
+  color: var(--gold);
+  font-size: 0.9rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.game-window:hover .game-fullscreen-btn { opacity: 1; }
+.game-fullscreen-btn:hover { background: rgba(212, 80, 60, 0.8); color: #fff; }
+
+/* 右侧：双轮播模块 */
+.side-carousels {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.side-carousels h3 {
+  font-size: 1.15rem;
+  color: var(--gold);
+  margin-bottom: 10px;
+  padding-left: 10px;
+  border-left: 4px solid var(--red);
+}
+
+/* ---------- 轮播比例适配真实素材 ---------- */
+/* NPC 立绘为竖版（2480×3508）：3:4 竖框 + 完整显示不裁切 */
+.carousel-portrait .carousel-slide img {
+  aspect-ratio: 3 / 4;
+  object-fit: contain;
+  background: radial-gradient(ellipse at 50% 80%, #1c2650, #0d1330);
+  padding: 10px;
+}
+/* 烟花图鉴近似方形（553×543）：1:1 方框完整显示 */
+.carousel-square .carousel-slide img {
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  background: #10173a;
+}
+
+/* ---------- 游玩数据栏 ---------- */
+.play-stats {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  gap: 8vw;
+  text-align: center;
+}
+
+/* ==================== 故事背景页 story.html ==================== */
+.story-carousel { max-width: 1000px; margin: 0 auto; }
+.story-text { max-width: 880px; margin: 0 auto; }
+.story-text h3 {
+  color: var(--gold);
+  font-size: 1.35rem;
+  margin: 28px 0 12px;
+  padding-left: 10px;
+  border-left: 4px solid var(--red);
+}
+.story-text p { text-indent: 2em; margin-bottom: 10px; color: var(--paper); }
+/* 李畋立绘专区 */
+.character-zone {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 40px;
+  align-items: center;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.character-portrait {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(240, 199, 94, 0.5);
+  box-shadow: 0 0 40px rgba(240, 199, 94, 0.18);
+}
+.character-info h3 {
+  font-size: 1.6rem;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+.character-info .role {
+  color: var(--red);
+  font-size: 0.95rem;
+  letter-spacing: 0.3em;
+  margin-bottom: 16px;
+}
+.character-info p { text-indent: 2em; }
+
+/* ==================== 上栗烟花页 culture.html ==================== */
+.culture-intro { max-width: 880px; margin: 0 auto; }
+.culture-intro h3 {
+  color: var(--gold);
+  font-size: 1.35rem;
+  margin: 28px 0 12px;
+  padding-left: 10px;
+  border-left: 4px solid var(--red);
+}
+.culture-intro p { text-indent: 2em; margin-bottom: 10px; }
+.culture-block { max-width: 900px; margin: 0 auto 56px; }
+.culture-block h3 {
+  font-size: 1.3rem;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+.culture-block .block-desc {
+  color: var(--paper-dim);
+  font-size: 0.92rem;
+  margin-bottom: 16px;
+}
+
+/* ==================== 关于我们页 about.html ==================== */
+.about-wrap {
+  max-width: 880px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+  font-size: 1.05rem;
+}
+.contact-item .icon {
+  width: 44px; height: 44px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-size: 1.2rem;
+}
+.contact-item .value { color: var(--paper); }
+.contact-item .label { color: var(--paper-dim); font-size: 0.85rem; }
+.qr-list { display: flex; gap: 24px; }
+.qr-item { text-align: center; }
+.qr-item img {
+  width: 140px; height: 140px;
+  border-radius: 10px;
+  border: 1px solid rgba(240, 199, 94, 0.4);
+  margin-bottom: 8px;
+}
+.qr-item .qr-label { font-size: 0.9rem; color: var(--paper-dim); }
+
+/* ---------- 响应式 ---------- */
+@media (max-width: 960px) {
+  .game-layout { grid-template-columns: 1fr; }
+  .character-zone { grid-template-columns: 1fr; }
+  .about-wrap { grid-template-columns: 1fr; }
+}
