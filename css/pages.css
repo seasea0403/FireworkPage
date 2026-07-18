@@ -112,7 +112,7 @@
   border: 1px solid rgba(240, 199, 94, 0.45);
   background: #000;
   aspect-ratio: 16 / 9;
-  align-self: start;
+  align-self: center;
 }
 #unity-canvas {
   width: 100%;
@@ -206,16 +206,26 @@
 }
 
 /* ---------- 轮播比例适配真实素材 ---------- */
-/* NPC 立绘为竖版（2480×3508）：3:4 竖框 + 完整显示不裁切 */
+/* NPC 立绘为竖版：固定宽高 */
+.carousel-portrait {
+  width: 230px;
+  height: 240px;
+}
 .carousel-portrait .carousel-slide img {
-  aspect-ratio: 3 / 4;
+  width: 230px;
+  height: 240px;
   object-fit: contain;
-  background: radial-gradient(ellipse at 50% 80%, #1c2650, #0d1330);
+  background: radial-gradient(ellipse at 50% 50%, #1c2650, #0d1330);
   padding: 10px;
 }
-/* 烟花图鉴近似方形（553×543）：1:1 方框完整显示 */
+/* 烟花图鉴：固定宽高 */
+.carousel-square {
+  width: 230px;
+  height: 200px;
+}
 .carousel-square .carousel-slide img {
-  aspect-ratio: 1 / 1;
+  width: 230px;
+  height: 200px;
   object-fit: contain;
   background: #10173a;
 }

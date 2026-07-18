@@ -14,7 +14,7 @@
 
   var UNITY_CONFIG = {
     buildDir: 'game/Build',   // Unity Build 文件夹在本站的位置
-    buildName: '网页导出' // TODO: 改成你的 xxx.loader.js 的前缀 xxx
+    buildName: 'PAGE' // TODO: 改成你的 xxx.loader.js 的前缀 xxx
   };
 
   var unityInstance = null;
