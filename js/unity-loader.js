@@ -8,6 +8,13 @@
       （即 Build/ 里 xxx.loader.js 的 xxx 部分）；
    4. 用本地静态服务器打开网站（不能 file:// 直接双击）。
    未接入 Build 时，游戏窗口自动显示「游戏即将上线」占位封面。
+
+   关于 data 大文件（当前方案：分卷）：
+   PAGE.data.unityweb 约 113MB，超过 GitHub 单文件 100MB 限制，
+   且 GitHub Pages 不支持 Git LFS，因此切成两个 <100MB 的
+   .part1 / .part2 分卷直接提交进仓库。加载时本脚本按顺序下载
+   各分卷、在浏览器内拼接为完整 Blob，再交给 Unity，行为与
+   直接下载完整文件完全一致（已按字节校验）。
    ============================================================ */
 (function () {
   'use strict';
@@ -15,12 +22,13 @@
   var UNITY_CONFIG = {
     buildDir: 'game/Build',   // Unity Build 文件夹在本站的位置
     buildName: 'PAGE', // TODO: 改成你的 xxx.loader.js 的前缀 xxx
-    // data 大文件的独立地址（可选项）。
-    // 场景：部署到 GitHub Pages 时，>100MB 的 .data.unityweb 无法随仓库分发
-    // （GitHub Pages 不支持 Git LFS，只会返回指针文本），需把该文件上传到
-    // GitHub Releases 或其他对象存储，然后把完整下载地址填在这里，例如：
-    // dataUrlOverride: 'https://github.com/seasea0403/FireworkPage/releases/download/v1.0/PAGE.data.unityweb'
-    // 留空（''）则使用本站 game/Build 下的本地文件（本地预览就是这种情况）。
+    // data 分卷列表（按拼接顺序填写）。留空数组 [] 则改为探测整文件。
+    dataParts: [
+      'game/Build/PAGE.data.unityweb.part1',
+      'game/Build/PAGE.data.unityweb.part2'
+    ],
+    // data 完整文件的外部直链（如 GitHub Releases / 对象存储）。
+    // 填了会优先于 dataParts；留空（''）表示不用。
     dataUrlOverride: ''
   };
 
@@ -33,7 +41,7 @@
   }
 
   /* Unity 构建产物可能带 .unityweb / .br / .gz 压缩后缀，依次探测
-     （你当前的导出是 .unityweb：gzip 压缩 + JS 解压回退，框架会自行解压） */
+     （当前的导出是 .unityweb：gzip 压缩 + JS 解压回退，框架会自行解压） */
   function detectExt(base) {
     return exists(base + '.unityweb').then(function (ok) {
       if (ok) return base + '.unityweb';
@@ -54,6 +62,70 @@
       s.onload = resolve;
       s.onerror = reject;
       document.body.appendChild(s);
+    });
+  }
+
+  /* 带进度回调地下载单个文件，resolve ArrayBuffer */
+  function fetchWithProgress(url, onProgress) {
+    return fetch(url).then(function (resp) {
+      if (!resp.ok) throw new Error('下载失败 (' + resp.status + '): ' + url);
+      var total = parseInt(resp.headers.get('Content-Length') || '0', 10);
+      if (!resp.body || !resp.body.getReader) {
+        return resp.arrayBuffer().then(function (buf) {
+          if (onProgress) onProgress(buf.byteLength, buf.byteLength);
+          return buf;
+        });
+      }
+      var reader = resp.body.getReader();
+      var chunks = [];
+      var loaded = 0;
+      function pump() {
+        return reader.read().then(function (r) {
+          if (r.done) {
+            var buf = new Uint8Array(loaded);
+            var off = 0;
+            chunks.forEach(function (c) { buf.set(c, off); off += c.length; });
+            return buf.buffer;
+          }
+          chunks.push(r.value);
+          loaded += r.value.length;
+          if (onProgress) onProgress(loaded, total);
+          return pump();
+        });
+      }
+      return pump();
+    });
+  }
+
+  /* 顺序下载所有分卷并拼接，resolve 完整 data 文件的 Blob URL */
+  function loadDataParts(parts, onProgress) {
+    // 先 HEAD 获取各分卷大小，用于计算总进度
+    return Promise.all(parts.map(function (u) {
+      return fetch(u, { method: 'HEAD' }).then(function (r) {
+        if (!r.ok) throw new Error('分卷不存在 (' + r.status + '): ' + u);
+        return parseInt(r.headers.get('Content-Length') || '0', 10);
+      });
+    })).then(function (sizes) {
+      var totalAll = sizes.reduce(function (a, b) { return a + b; }, 0) || 1;
+      var loadedArr = parts.map(function () { return 0; });
+      function report() {
+        var loadedAll = loadedArr.reduce(function (a, b) { return a + b; }, 0);
+        if (onProgress) onProgress(loadedAll / totalAll);
+      }
+      var buffers = [];
+      var chain = Promise.resolve();
+      parts.forEach(function (u, i) {
+        chain = chain.then(function () {
+          return fetchWithProgress(u, function (loaded) {
+            loadedArr[i] = loaded;
+            report();
+          }).then(function (buf) { buffers.push(buf); });
+        });
+      });
+      return chain.then(function () {
+        var blob = new Blob(buffers, { type: 'application/octet-stream' });
+        return URL.createObjectURL(blob);
+      });
     });
   }
 
@@ -80,6 +152,16 @@
     }
 
     var base = UNITY_CONFIG.buildDir + '/' + UNITY_CONFIG.buildName;
+    var useParts = !UNITY_CONFIG.dataUrlOverride &&
+                   UNITY_CONFIG.dataParts && UNITY_CONFIG.dataParts.length > 0;
+    /* 用分卷时：0–70% 为分卷下载，70–100% 为 Unity 引擎加载 */
+    var unityBase = useParts ? 70 : 0;
+
+    function setProgress(pct, text) {
+      pct = Math.max(0, Math.min(100, Math.round(pct)));
+      if (progressFill) progressFill.style.width = pct + '%';
+      if (progressText) progressText.textContent = text || ('游戏加载中… ' + pct + '%');
+    }
 
     exists(base + '.loader.js').then(function (hasLoader) {
       if (!hasLoader) return; // 未接入 Build，保留占位封面
@@ -87,10 +169,19 @@
       // 已检测到构建文件：显示进度条，开始加载
       if (progress) progress.classList.add('show');
 
+      var dataPromise;
+      if (UNITY_CONFIG.dataUrlOverride) {
+        dataPromise = Promise.resolve(UNITY_CONFIG.dataUrlOverride);
+      } else if (useParts) {
+        dataPromise = loadDataParts(UNITY_CONFIG.dataParts, function (frac) {
+          setProgress(frac * 70, '下载游戏资源… ' + Math.round(frac * 100) + '%');
+        });
+      } else {
+        dataPromise = detectExt(base + '.data');
+      }
+
       Promise.all([
-        UNITY_CONFIG.dataUrlOverride
-          ? Promise.resolve(UNITY_CONFIG.dataUrlOverride) // data 走外部地址（如 Releases）
-          : detectExt(base + '.data'),
+        dataPromise,
         detectExt(base + '.framework.js'),
         detectExt(base + '.wasm')
       ]).then(function (urls) {
@@ -104,9 +195,7 @@
             productName: '天工录之岁岁烟火铺',
             productVersion: '1.0'
           }, function (p) {
-            var pct = Math.round(p * 100);
-            if (progressFill) progressFill.style.width = pct + '%';
-            if (progressText) progressText.textContent = '游戏加载中… ' + pct + '%';
+            setProgress(unityBase + p * (100 - unityBase));
           });
         });
       }).then(function (instance) {
@@ -116,7 +205,6 @@
       }).catch(function (err) {
         console.error('Unity WebGL 加载失败：', err);
         if (progress) progress.classList.remove('show');
-        if (progressText) progressText.textContent = '';
         if (cover) {
           var sub = cover.querySelector('.game-cover-sub');
           if (sub) sub.textContent = '游戏加载失败，请检查 game/Build 文件与 UNITY_CONFIG 配置';

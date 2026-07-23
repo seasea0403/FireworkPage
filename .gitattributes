@@ -1,3 +1,4 @@
 # Auto detect text files and perform LF normalization
 * text=auto
-*.data.unityweb filter=lfs diff=lfs merge=lfs -text
+# Unity data 分卷是二进制，禁止任何换行符转换
+*.unityweb.part* binary

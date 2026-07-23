@@ -32,6 +32,28 @@ npx serve .
 完成后再访问首页，左侧游戏窗口会自动加载游戏（带进度条），右下角全屏按钮 hover 显示。
 未放入 Build 时，游戏窗口保持「游戏即将上线」占位封面，不影响其他功能。
 
+### data 大文件的分卷方案（当前项目正在使用）
+
+`PAGE.data.unityweb` 约 113MB，超过 GitHub 单文件 100MB 限制（GitHub Pages 也不支持 Git LFS），因此仓库里放的是两个分卷：
+
+```
+game/Build/PAGE.data.unityweb.part1  (60 MiB)
+game/Build/PAGE.data.unityweb.part2  (约 48 MiB)
+```
+
+`js/unity-loader.js` 加载时会按 `UNITY_CONFIG.dataParts` 的顺序下载分卷、在浏览器内拼接成完整文件（Blob URL）再交给 Unity，玩家无感知。本地保留的完整 `PAGE.data.unityweb` 已被 `.gitignore` 忽略，不会提交。
+
+重新导出游戏后需要重新分卷：
+
+```bash
+cd game/Build
+split -b 60M -d PAGE.data.unityweb PAGE.data.unityweb.part
+# 把生成的 .part00/.part01 重命名为 .part1/.part2
+# 校验：cat PAGE.data.unityweb.part1 PAGE.data.unityweb.part2 | cmp - PAGE.data.unityweb
+```
+
+若分卷数量变化，同步修改 `js/unity-loader.js` 里的 `dataParts` 列表。
+
 ## 素材替换清单（同名覆盖即可，支持换成 png/jpg/mp4，记得同步改 HTML 里的扩展名）
 
 | 路径 | 用途 |
