@@ -21,7 +21,7 @@
     // GitHub Releases 或其他对象存储，然后把完整下载地址填在这里，例如：
     // dataUrlOverride: 'https://github.com/seasea0403/FireworkPage/releases/download/v1.0/PAGE.data.unityweb'
     // 留空（''）则使用本站 game/Build 下的本地文件（本地预览就是这种情况）。
-    dataUrlOverride: 'https://github.com/seasea0403/FireworkPage/releases/download/v1.0/PAGE.data.gz'
+    dataUrlOverride: ''
   };
 
   var unityInstance = null;
